@@ -11,7 +11,7 @@ export const Repo = (props) => {
                 <div className="repo-header-name">{repo.name}</div>
                 <div className="repo-header-stars">{repo.stargazers_count}</div>
             </div>
-            <div className="repo-last-commit">{repo.update_at}</div>
+            <div className="repo-last-commit">Последний комит:{repo.updated_at}</div>
             <a href={repo.html_url} className={"repo-link"}>Ссылка: {repo.html_url}</a>
         </div>
     )
