@@ -3,9 +3,11 @@ import './main.css'
 import {useDispatch, useSelector} from "react-redux";
 
 import {Repo} from "./repo/Repo";
-import {getRepos} from "./actions/repos";
-import {setCurrentPage} from "../reducers/reposReducer";
-import {createPages} from "../utils/pagesCreator";
+import {getRepos} from "../actions/repos";
+import {setCurrentPage} from "../../reducers/reposReducer";
+import {createPages} from "../../utils/pagesCreator";
+
+import {Alert} from "@material-ui/lab";
 
 
 export const Main = () => {
@@ -15,10 +17,11 @@ export const Main = () => {
     const currentPage = useSelector(state => state.repos.currentPage)
     const totalCount = useSelector(state => state.repos.totalCount)
     const perPage = useSelector(state => state.repos.perPage)
+    const isFetchError = useSelector(state => state.repos.isFetchError)
 
     const [searchValue, setSearchValue] = useState('')
 
-    const pagesCount = Math.ceil(totalCount/perPage)
+    const pagesCount = Math.ceil(totalCount / perPage)
     const pages = []
     createPages(pages, pagesCount, currentPage)
 
@@ -26,7 +29,7 @@ export const Main = () => {
     useEffect(() => {
             dispatch(getRepos(searchValue, currentPage, perPage))
         },
-        [currentPage])
+        [currentPage, dispatch, perPage, searchValue])
 
     function searchHandler(e) {
         dispatch(setCurrentPage(1))
@@ -36,18 +39,22 @@ export const Main = () => {
     }
 
 
-
     return (
         <div>
+            {isFetchError &&
+                <Alert variant="filled" severity="error">Произошла ошибка! ПОжалуйста обновите страницу!</Alert>
+            }
+
             <div className={'search'}>
-                <input value={searchValue} onChange={searchHandler} type={'text'} placeholder={'Input repo name'} className='search-input'/>
+                <input value={searchValue} onChange={searchHandler} type={'text'} placeholder={'Input repo name'}
+                       className='search-input'/>
                 {/*<button className="search-btn">Search</button>*/}
             </div>
 
             {
                 isFetching === false
                     ?
-                repos.map(repo => <Repo repo={repo}/>)
+                    repos.map(repo => <Repo repo={repo}/>)
                     :
                     <div className={'fetching'}>
 
@@ -56,7 +63,7 @@ export const Main = () => {
             <div className="pages">
                 {pages.map((page, index) => <span
                     key={index}
-                    className={currentPage == page ? "current-page" : "page"}
+                    className={currentPage === page ? "current-page" : "page"}
                     onClick={() => dispatch(setCurrentPage(page))}>{page}</span>)}
             </div>
 
